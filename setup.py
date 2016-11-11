@@ -11,6 +11,7 @@ setup(name='vagga2lithos',
       packages=['vagga2lithos'],
       install_requires=[
         'PyYaml',
+        'click',
       ],
       classifiers=[
           'Development Status :: 4 - Beta',
