@@ -1,0 +1,6 @@
+/.vagga
+/dist
+/build
+*.pyc
+*.py0
+__pycache__

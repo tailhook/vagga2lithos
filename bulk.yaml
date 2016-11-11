@@ -1,0 +1,12 @@
+minimum-bulk: v0.4.1
+
+versions:
+
+- file: setup.py
+  regex: ^\s*version\s*=\s*["']([^"']+)["']
+
+- file: vagga2lithos/__init__.py
+  regex: ^__version__\s*=\s*["']([^"']+)["']
+
+- file: README.rst
+  regex: vagga2lithos==(\S+)
