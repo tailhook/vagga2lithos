@@ -27,6 +27,18 @@ But in the meantime install from github::
     pip install git+https://github.com/tailhook/vagga2lithos
 
 
+Try
+===
+
+Running directly from the repo::
+
+    vagga run generate -f examples/django/vagga.yaml run
+
+Running installed tool (in your project directory)::
+
+    vagga2lithos generate your-run-command
+
+
 License
 =======
 
