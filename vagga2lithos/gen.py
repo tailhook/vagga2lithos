@@ -36,6 +36,7 @@ def _convert_cmd(cmd):
             # TODO(tailhook) gather from vagga.yaml
         },
         # TODO(tailhook) workdir
+        # TODO(tailhook) search path in PATH and in container
         'executable': run[0],
         'arguments': run[1:],
         'memory-limit': '1Ti', # TODO(tailhook) basically no limit so far
