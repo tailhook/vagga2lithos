@@ -38,9 +38,13 @@ Running installed tool (in your project directory)::
 
     vagga2lithos generate your-run-command > lithos.yaml
 
-To check if your configuration is in sync:
+To check if your configuration is in sync::
 
     vagga2lithos check your-run-command
+
+To update your configuration file::
+
+    vagga2lithos update your-run-command --verbose --interactive
 
 
 License

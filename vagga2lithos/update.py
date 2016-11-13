@@ -1,3 +1,4 @@
+import os
 import sys
 import copy
 import difflib
@@ -64,6 +65,12 @@ def careful_update(old_config, old_info, new_info, *, verbose):
     return new_config
 
 
+def approve(message):
+    while True:
+        print(message)
+        if input().strip() == 'Yes':
+            break
+
 
 @cli.command()
 @click.option('-f', '--input', default='vagga.yaml',
@@ -97,6 +104,53 @@ def check(input, vagga_command, lithos_file, verbose):
                 print("Proposed changes:", lithos_file)
                 print('\n'.join(difflib.ndiff(old.splitlines(),
                                             new.splitlines())))
+            sys.exit(1)
+
+    else:
+        raise NotImplementedError(cmd)
+
+
+@cli.command()
+@click.option('-f', '--input', default='vagga.yaml',
+    help='The vagga.yaml file to read')
+@click.option('-l', '--lithos-file', default='lithos.yaml',
+    help='The lithos.yaml file to read')
+@click.option('-v', '--verbose/--quiet', default=False,
+    help='Print diagnostic messsages')
+@click.option('-i', '--interactive/--batch', default=False,
+    help='Interactive (show diff and ask before updating file)')
+@click.argument('vagga-command', default='run')
+def update(input, vagga_command, lithos_file, verbose, interactive):
+    data = vagga.load_yaml(input)
+    cmd = data['commands'].get(vagga_command)
+    if cmd is None:
+        panic("Command {!r} not found", vagga_command)
+    if cmd.__class__.__name__ == 'Command':
+
+        info = extract_command_info(data, cmd)
+        header = metadata.read_header(lithos_file)
+        if info == header:
+            if verbose:
+                print("Everything is up to date")
+            sys.exit(0)
+        else:
+            old_config = lithos.read(lithos_file)
+            new_config = careful_update(old_config, header, info,
+                verbose=verbose)
+            old = lithos.dump(old_config)
+            new = lithos.dump(new_config)
+            if interactive:
+                print("Proposed changes:", lithos_file)
+
+                print('\n'.join(difflib.ndiff(old.splitlines(),
+                                            new.splitlines())))
+                approve('Apply the patch? (must type "Yes")')
+
+            header_text = metadata.header(info)
+            text = header_text + lithos.dump(new_config)
+            with open(lithos_file + '.tmp', 'wt') as f:
+                f.write(text)
+            os.rename(lithos_file + '.tmp', lithos_file)
             sys.exit(1)
 
     else:
