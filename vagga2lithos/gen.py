@@ -2,8 +2,10 @@ import click
 
 from . import vagga
 from . import lithos
+from . import metadata
 from .main import main as cli
 from .human import panic
+from .vagga_command import extract_command_info
 
 
 @cli.command()
@@ -14,31 +16,26 @@ def generate(input, vagga_command):
     data = vagga.load_yaml(input)
     cmd = data['commands'].get(vagga_command)
     if cmd is None:
-        panic("Command {} not found", vagga_command)
-
-    output = _convert_cmd(cmd)
-
-    import sys
-    lithos.dump(output, sys.stdout)
-
-
-def _convert_cmd(cmd):
-    run = cmd.run
-    if isinstance(run, list):
-        run = run
+        panic("Command {!r} not found", vagga_command)
+    if cmd.__class__.__name__ == 'Command':
+        info = extract_command_info(data, cmd)
+        output = _convert_cmd(info)
+        header = metadata.header(info)
+        text = header + lithos.dump(output)
+        print(text)
     else:
-        run = ['sh', '-ec', run]
+        raise NotImplementedError(cmd)
+
+
+def _convert_cmd(info):
     return {
         'kind': 'Daemon',
         'user-id': 1,
         'group-id': 1,
-        'environ': {
-            # TODO(tailhook) gather from vagga.yaml
-        },
+        'environ': info['environ'],
         # TODO(tailhook) workdir
-        # TODO(tailhook) search path in PATH and in container
-        'executable': run[0],
-        'arguments': run[1:],
+        'executable': info['executable'],
+        'arguments': info['arguments'],
         'memory-limit': '1Ti', # TODO(tailhook) basically no limit so far
         'fileno-limit': 65536, # Should be fine, docker uses it by default
         'cpu-shares': 1024,
