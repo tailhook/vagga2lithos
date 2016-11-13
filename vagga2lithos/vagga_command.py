@@ -6,6 +6,7 @@ def extract_command_info(vagga, cmd):
 
     env = container.get('environ', {}).copy()
     env.update(getattr(cmd, 'environ', {}))
+    env.setdefault('PATH', DEFAULT_PATH)
 
     cli = cmd.run
     if isinstance(cli, str):
