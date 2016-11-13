@@ -1,12 +1,19 @@
+import os
+from io import StringIO
 import yaml
 
 try:
     from yaml import CSafeDumper as BaseDumper
+    from yaml import CSafeLoader as BaseLoader
 except ImportError:
     from yaml import SafeDumper as BaseDumper
+    from yaml import SafeLoader as BaseLoader
 
 
 class Dumper(BaseDumper):
+    pass
+
+class Loader(BaseLoader):
     pass
 
 
@@ -15,3 +22,13 @@ def header(info):
     header += ''.join("# v2l: " + line
         for line in yaml.dump(info, Dumper=Dumper).splitlines(True))
     return header
+
+def read_header(file):
+    buf = StringIO()
+    with open(file, 'rt', encoding='utf-8') as f:
+        for line in f:
+            if line.startswith('# v2l:'):
+                buf.write(line[len('# v2l:'):].strip())
+                buf.write('\n')
+    buf.seek(0)
+    return yaml.load(buf, Loader=Loader)

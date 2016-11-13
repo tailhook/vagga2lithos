@@ -36,7 +36,11 @@ Running directly from the repo::
 
 Running installed tool (in your project directory)::
 
-    vagga2lithos generate your-run-command
+    vagga2lithos generate your-run-command > lithos.yaml
+
+To check if your configuration is in sync:
+
+    vagga2lithos check your-run-command
 
 
 License
