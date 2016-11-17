@@ -13,6 +13,11 @@ setup(name='vagga2lithos',
         'PyYaml',
         'click',
       ],
+      entry_points={
+          'console_scripts': [
+              'vagga2lithos = vagga2lithos.main:main',
+          ]
+      },
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python :: 3',
