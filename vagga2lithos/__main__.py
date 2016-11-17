@@ -1,3 +1,3 @@
 if __name__ == '__main__':
-    from . import main, gen, update
+    from . import main
     main.main()
