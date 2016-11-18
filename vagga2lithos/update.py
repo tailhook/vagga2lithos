@@ -5,7 +5,7 @@ import difflib
 
 import click
 
-from . import vagga
+from .vagga import Config as Vagga
 from . import lithos
 from . import metadata
 from .main import main as cli
@@ -81,13 +81,13 @@ def approve(message):
     help='Print diagnostic messsages')
 @click.argument('vagga-command', default='run')
 def check(input, vagga_command, lithos_file, verbose):
-    data = vagga.load_yaml(input)
-    cmd = data['commands'].get(vagga_command)
+    vagga = Vagga.load(input)
+    cmd = vagga.commands.get(vagga_command)
     if cmd is None:
         panic("Command {!r} not found", vagga_command)
     if cmd.__class__.__name__ == 'Command':
 
-        info = extract_command_info(data, cmd)
+        info = extract_command_info(vagga, cmd)
         header = metadata.read_header(lithos_file)
         if info == header:
             if verbose:
@@ -121,13 +121,13 @@ def check(input, vagga_command, lithos_file, verbose):
     help='Interactive (show diff and ask before updating file)')
 @click.argument('vagga-command', default='run')
 def update(input, vagga_command, lithos_file, verbose, interactive):
-    data = vagga.load_yaml(input)
-    cmd = data['commands'].get(vagga_command)
+    vagga = Vagga.load(input)
+    cmd = vagga.commands.get(vagga_command)
     if cmd is None:
         panic("Command {!r} not found", vagga_command)
     if cmd.__class__.__name__ == 'Command':
 
-        info = extract_command_info(data, cmd)
+        info = extract_command_info(vagga, cmd)
         header = metadata.read_header(lithos_file)
         if info == header:
             if verbose:

@@ -2,7 +2,7 @@ DEFAULT_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 
 def extract_command_info(vagga, cmd):
-    container = vagga['containers'][cmd.container]
+    container = vagga.containers[cmd.container]
 
     env = container.get('environ', {}).copy()
     env.update(getattr(cmd, 'environ', {}))

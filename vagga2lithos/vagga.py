@@ -29,6 +29,12 @@ def unknown_type(loader, tag, node):
 yaml.add_multi_constructor("!", unknown_type, Loader=Loader)
 
 
-def load_yaml(path):
-    with open(path) as f:
-        return yaml.load(f, Loader=Loader)
+class Config(object):
+    def __init__(self, containers, commands):
+        self.containers = containers
+        self.commands = commands
+
+    @classmethod
+    def load(Config, path):
+        with open(path) as f:
+            return Config(**yaml.load(f, Loader=Loader))
