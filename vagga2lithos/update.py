@@ -14,7 +14,7 @@ from .vagga_command import extract_command_info
 
 
 
-def careful_update(old_config, old_info, new_info, *, verbose):
+def _careful_update(old_config, old_info, new_info, *, verbose):
     new_config = copy.deepcopy(old_config)
 
     if old_info['executable'] != new_info['executable']:
@@ -87,18 +87,16 @@ def check(input, vagga_command, lithos_file, verbose):
         panic("Command {!r} not found", vagga_command)
     if cmd.__class__.__name__ == 'Command':
 
-        info = extract_command_info(vagga, cmd)
-        header = metadata.read_header(lithos_file)
-        if info == header:
+        old_config = lithos.read(lithos_file)
+        new_header, new_config = updated_config(old_config, lithos_file,
+            vagga, cmd)
+        if old_config == new_config:
             if verbose:
                 print("Everything is up to date")
             sys.exit(0)
         else:
             if verbose:
                 print("Changes needed")
-                old_config = lithos.read(lithos_file)
-                new_config = careful_update(old_config, header, info,
-                    verbose=verbose)
                 old = lithos.dump(old_config)
                 new = lithos.dump(new_config)
                 print("Proposed changes:", lithos_file)
@@ -108,6 +106,13 @@ def check(input, vagga_command, lithos_file, verbose):
 
     else:
         raise NotImplementedError(cmd)
+
+
+def updated_config(old_config, old_file, vagga, cmd, *, verbose=False):
+    info = extract_command_info(vagga, cmd)
+    header = metadata.read_header(old_file)
+    new_config = _careful_update(old_config, header, info, verbose=verbose)
+    return info, new_config
 
 
 @cli.command()
@@ -146,7 +151,7 @@ def update(input, vagga_command, lithos_file, verbose, interactive):
                                             new.splitlines())))
                 approve('Apply the patch? (must type "Yes")')
 
-            header_text = metadata.header(info)
+            header_text = metadata.dump_header(info)
             text = header_text + lithos.dump(new_config)
             with open(lithos_file + '.tmp', 'wt') as f:
                 f.write(text)

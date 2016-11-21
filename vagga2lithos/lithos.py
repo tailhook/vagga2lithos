@@ -74,7 +74,8 @@ yaml.add_representer(Quoted, Dumper.quoted_repr, Dumper=Dumper)
 def unknown_type(loader, tag, node):
     if isinstance(node, yaml.MappingNode):
         typ = type(tag, (object,), {
-            '__init__': lambda self, **kwargs: self.__dict__.update(kwargs)
+            '__init__': lambda self, **kwargs: self.__dict__.update(kwargs),
+            '__eq__': lambda self, other: self.__dict__ == other.__dict__,
         })
         yaml.add_representer(typ, Dumper.tag_map_repr, Dumper=Dumper)
         return typ(**loader.construct_mapping(node))
@@ -90,9 +91,9 @@ def unknown_type(loader, tag, node):
 
 yaml.add_multi_constructor("!", unknown_type, Loader=Loader)
 
-def dump(data, *args, **kwargs):
-    return yaml.dump(Toplevel(data), *args, Dumper=Dumper, **kwargs)
+def dump(data, file=None):
+    return yaml.dump(Toplevel(data), file, Dumper=Dumper)
 
 def read(filename):
-    with open(filename) as f:
+    with open(str(filename)) as f:
         return yaml.load(f, Loader=Loader)

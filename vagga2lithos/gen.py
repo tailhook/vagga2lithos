@@ -31,7 +31,7 @@ def generate_command(vagga, cmd):
     if cmd.__class__.__name__ == 'Command':
         info = extract_command_info(vagga, cmd)
         output = _convert_cmd(info)
-        header = metadata.header(info)
+        header = metadata.dump_header(info)
         return header + lithos.dump(output)
     else:
         raise NotImplementedError(cmd)
