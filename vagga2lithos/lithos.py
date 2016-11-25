@@ -59,6 +59,7 @@ class Toplevel(dict):
         yield 'memory-limit', x.pop('memory-limit')
         yield 'fileno-limit', x.pop('fileno-limit')
         yield 'cpu-shares', x.pop('cpu-shares')
+        yield 'workdir', x.pop('workdir', '/')
         yield 'executable', x.pop('executable')
         yield 'arguments', List(map(Quoted, x.pop('arguments')))
         for k, v in x.items():

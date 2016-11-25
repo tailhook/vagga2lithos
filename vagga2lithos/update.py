@@ -27,6 +27,16 @@ def _careful_update(old_config, old_info, new_info, *, verbose):
             if verbose:
                 print("Skipping executable change because it was overriden")
 
+    if old_info.get('work-dir') != new_info['work-dir']:
+        if verbose:
+            print("Working dir changed {} -> {}".format(
+                old_info.get('work-dir'), new_info['work-dir']))
+        if old_config.get('workdir') == old_info.get('work-dir'):
+            new_config['workdir'] = new_info['work-dir']
+        else:
+            if verbose:
+                print("Skipping work-dir change because it was overriden")
+
     if old_info['arguments'] != new_info['arguments']:
         if verbose:
             print("Arguments changed {!r} -> {!r}".format(
@@ -108,8 +118,9 @@ def check(input, vagga_command, lithos_file, verbose):
         raise NotImplementedError(cmd)
 
 
-def updated_config(old_config, old_file, vagga, cmd, *, verbose=False):
-    info = extract_command_info(vagga, cmd)
+def updated_config(old_config, old_file, vagga, cmd, *,
+        verbose=False, workdir_base='/app'):
+    info = extract_command_info(vagga, cmd, workdir_base=workdir_base)
     header = metadata.read_header(old_file)
     new_config = _careful_update(old_config, header, info, verbose=verbose)
     return info, new_config

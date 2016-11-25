@@ -27,9 +27,9 @@ def generate(input, vagga_command, output=None):
     else:
         print(text)
 
-def generate_command(vagga, cmd):
+def generate_command(vagga, cmd, workdir_base='/app'):
     if cmd.__class__.__name__ == 'Command':
-        info = extract_command_info(vagga, cmd)
+        info = extract_command_info(vagga, cmd, workdir_base=workdir_base)
         output = _convert_cmd(info)
         header = metadata.dump_header(info)
         return header + lithos.dump(output)
@@ -43,7 +43,7 @@ def _convert_cmd(info):
         'user-id': 1,
         'group-id': 1,
         'environ': info['environ'],
-        # TODO(tailhook) workdir
+        'workdir': info['work-dir'],
         'executable': info['executable'],
         'arguments': info['arguments'],
         'memory-limit': '1024Gi', # TODO(tailhook) basically no limit so far
