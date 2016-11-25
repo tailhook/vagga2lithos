@@ -46,7 +46,7 @@ def _convert_cmd(info):
         # TODO(tailhook) workdir
         'executable': info['executable'],
         'arguments': info['arguments'],
-        'memory-limit': '1Ti', # TODO(tailhook) basically no limit so far
+        'memory-limit': '1024Gi', # TODO(tailhook) basically no limit so far
         'fileno-limit': 65536, # Should be fine, docker uses it by default
         'cpu-shares': 1024,
         'volumes': {
