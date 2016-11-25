@@ -1,11 +1,11 @@
-import yaml
+from ruamel import yaml
 
 try:
-    from yaml import CSafeDumper as BaseDumper
-    from yaml import CSafeLoader as BaseLoader
+    from ruamel.yaml import CSafeDumper as BaseDumper
+    from ruamel.yaml import CSafeLoader as BaseLoader
 except ImportError:
-    from yaml import SafeDumper as BaseDumper
-    from yaml import SafeLoader as BaseLoader
+    from ruamel.yaml import SafeDumper as BaseDumper
+    from ruamel.yaml import SafeLoader as BaseLoader
 
 
 class Dumper(BaseDumper):

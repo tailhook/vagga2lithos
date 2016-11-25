@@ -4,7 +4,8 @@ containers:
     setup:
     - !Alpine v3.4
     - !Repo edge/main
-    - !Install [py3-yaml, py3-click]
+    - !Install [py3-click]
+    - !Py3Install [ruamel.yaml]
 
   _bulk:
     setup:

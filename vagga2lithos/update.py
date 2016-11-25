@@ -143,7 +143,7 @@ def update(input, vagga_command, lithos_file, verbose, interactive):
         panic("Command {!r} not found", vagga_command)
     if cmd.__class__.__name__ == 'Command':
 
-        info = extract_command_info(vagga, cmd)
+        info = extract_command_info(vagga, cmd, workdir_base='/work')
         header = metadata.read_header(lithos_file)
         if info == header:
             if verbose:
@@ -151,7 +151,7 @@ def update(input, vagga_command, lithos_file, verbose, interactive):
             sys.exit(0)
         else:
             old_config = lithos.read(lithos_file)
-            new_config = careful_update(old_config, header, info,
+            new_config = _careful_update(old_config, header, info,
                 verbose=verbose)
             old = lithos.dump(old_config)
             new = lithos.dump(new_config)
