@@ -44,6 +44,16 @@ class Dumper(BaseDumper):
     def copy_repr(self, value):
         return self.represent_mapping("!Copy", value.__dict__)
 
+    def generic_object_repr(self, value):
+        return self.represent_mapping("!"+value.__class__.__name__,
+            value.__dict__)
+
+    def generic_list_repr(self, value):
+        return self.represent_sequence("!"+value.__class__.__name__, value)
+
+    def generic_str_repr(self, value):
+        return self.represent_scalar("!"+value.__class__.__name__, value)
+
 
 class Container(object):
 
@@ -96,12 +106,15 @@ def unknown_type(loader, tag, node):
             '__init__': lambda self, **kwargs: self.__dict__.update(kwargs),
             '__eq__': lambda self, other: self.__dict__ == other.__dict__,
         })
+        yaml.add_representer(typ, Dumper.generic_object_repr, Dumper=Dumper)
         return typ(**loader.construct_mapping(node))
     elif isinstance(node, yaml.SequenceNode):
         typ = type(tag, (list,), {})
+        yaml.add_representer(typ, Dumper.generic_list_repr, Dumper=Dumper)
         return typ(loader.construct_sequence(node))
     elif isinstance(node, yaml.ScalarNode):
         typ = type(tag, (str,), {})
+        yaml.add_representer(typ, Dumper.generic_str_repr, Dumper=Dumper)
         return typ(loader.construct_scalar(node))
     else:
         raise NotImplementedError(node)
