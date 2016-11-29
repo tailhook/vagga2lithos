@@ -1,13 +1,13 @@
 import os
 from io import StringIO
-from ruamel import yaml
+import yaml
 
 try:
-    from ruamel.yaml import CSafeDumper as BaseDumper
-    from ruamel.yaml import CSafeLoader as BaseLoader
+    from yaml import CSafeDumper as BaseDumper
+    from yaml import CSafeLoader as BaseLoader
 except ImportError:
-    from ruamel.yaml import SafeDumper as BaseDumper
-    from ruamel.yaml import SafeLoader as BaseLoader
+    from yaml import SafeDumper as BaseDumper
+    from yaml import SafeLoader as BaseLoader
 
 
 class Dumper(BaseDumper):
