@@ -1,4 +1,5 @@
 import yaml
+import pathlib
 
 try:
     from yaml import CSafeDumper as BaseDumper
@@ -135,6 +136,21 @@ yaml.add_representer(Unpack, Dumper.unpack_repr, Dumper=Dumper)
 yaml.add_multi_constructor("!", unknown_type, Loader=Loader)
 
 
+def load_mixins(mixins, base_dir):
+    containers = {}
+    commands = {}
+    for mix in mixins or ():
+        fn = base_dir / mix
+        with open(str(fn)) as f:
+            mixin = yaml.load(f, Loader=Loader)
+        containers, commands = load_mixins(mixin.get('mixins'), fn.parent)
+        containers.update(containers)
+        containers.update(mixin.get('containers', {}))
+        commands.update(commands)
+        commands.update(mixin.get('commands', {}))
+    return containers, commands
+
+
 class Config(object):
     def __init__(self, containers, commands):
         self.containers = containers
@@ -142,8 +158,13 @@ class Config(object):
 
     @classmethod
     def load(Config, path):
+        path = pathlib.Path(path)
         with open(str(path)) as f:
-            return Config(**yaml.load(f, Loader=Loader))
+            data = yaml.load(f, Loader=Loader)
+        containers, commands = load_mixins(data.get('mixins'), path.parent)
+        containers.update(data.get('containers', {}))
+        commands.update(data.get('commands', {}))
+        return Config(commands=commands, containers=containers)
 
 
 def dump(data, file=None):

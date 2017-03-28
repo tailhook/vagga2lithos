@@ -1,0 +1,23 @@
+containers:
+  memcached:
+    setup:
+    - !Alpine v3.4
+    - !Install [memcached]
+  postgres:
+    setup:
+    - !Ubuntu xenial
+    - !Install [postgresql]
+    - !EnsureDir /data
+    environ:
+      PGDATA: /data
+      PG_PORT: 5433
+      PG_DB: django
+      PG_USER: vagga
+      PG_PASSWORD: vagga
+      PG_BIN: /usr/lib/postgresql/9.5/bin
+    volumes:
+      /data: !Tmpfs
+        size: 100M
+        mode: 0o700
+      # replace the volume above with the one below to make postgres data persistent
+      # /data: !Persistent { name: postgres.data }
